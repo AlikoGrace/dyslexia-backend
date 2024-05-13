@@ -6,7 +6,7 @@ const createToken = require("./../../utils/createToken")
 const authenticateUser = async(data)=>{
     try {
         const{email,password}=data;
-s
+
         const fetchedUser = await User.findOne({email})
 
         //Extract user Id from fetched user for child registration
