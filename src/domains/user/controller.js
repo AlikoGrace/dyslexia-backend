@@ -9,16 +9,14 @@ const authenticateUser = async(data)=>{
 
         const fetchedUser = await User.findOne({email})
 
-        //Extract user Id from fetched user for child registration
-        const userId = fetchedUser._d
-        console.log(userId);
+    
 
         if (!fetchedUser){
-            throw Error("Invalid email entered");
+            return { error: "Invalid email entered" }; // Return error message
         }
 
         if (!fetchedUser.verified){
-            throw Error("Email hasn't been verified yet, check your inbox");
+            return { error: "Email hasn't been verified yet, check your inbox" }; // Return error message
         }
         
         const hashedPassword = fetchedUser.password;
@@ -35,7 +33,7 @@ const authenticateUser = async(data)=>{
 
         //assign user token
         fetchedUser.token= token
-        return {fetchedUser,userId};
+        return fetchedUser;
 
         
     } catch (error) {
@@ -67,9 +65,9 @@ const createNewUser= async(data)=>{
         const createdUser= await newUser.save();
         return createdUser;
     } catch (error) {
-        // Handle specific errors here, e.g., duplicate email
+        
         if (error.code === 11000 && error.keyValue.email) {
-            throw Error("User with the provided email already exists");
+            return {error: "User with the provided email already exists"};
         } else {
             throw error; // Re-throw other errors for generic handling
         }

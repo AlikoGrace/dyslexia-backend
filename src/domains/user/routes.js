@@ -18,8 +18,8 @@ router.get("/private_data",auth,(req, res)=>{
 router.post("/",async(req,res)=>{
     try {
         let {email,password}=req.body;
-        email.trim();
-        password.trim();
+        email=email.trim();
+        password=password.trim();
 
 
         

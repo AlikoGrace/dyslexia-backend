@@ -26,7 +26,7 @@ const verifyOTP = async ({email, otp})=>{
     //checking for exipired code
      if (expiresAt< Date.now()){
         await OTP.deleteOne({email});
-        throw Error("code has expired.request for a new one");
+        throw Error("code has expired.Request for a new one");
      }
 
      
