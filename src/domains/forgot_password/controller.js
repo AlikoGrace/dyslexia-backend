@@ -15,13 +15,13 @@ const resetUserPassword = async ({
     try {
         const validOTP= await verifyOTP({email,otp});
         if (!validOTP){
-            throw Error("Invalid code passed, check your");
+            return {error:"Invalid code passed, check your"};
         }
 
 
         //updatae user record with new password
         if (newPassword.length<5){
-            throw Error("Password is too");
+            return {error:"Password is too short"};
         }
         
 
@@ -29,7 +29,7 @@ const resetUserPassword = async ({
        await User.updateOne({email}, {password:hashedNewPassword});
        await deleteOTP(email);
     } catch (error) {
-        throw error;
+        return { error:error.message};
     }
 }
 
@@ -47,12 +47,12 @@ const sendPasswordResetOTPEmail = async (email)=>{
         //check if account exist
         const existingUser= await User.findOne({email});
         if (!existingUser){
-            throw Error("Theres no account for the provided email");
+            return {error:"Theres no account for the provided email"};
         }
 
 
         if (!existingUser.verified){
-            throw Error("Email hasn't been verified yet, check your inbox")
+            return{error:"Email hasn't been verified yet, check your inbox"}
         }
         
 
@@ -66,7 +66,7 @@ const sendPasswordResetOTPEmail = async (email)=>{
         const createdOTP = await sendOTP(otpDetails);
         return createdOTP;
     } catch (error) {
-        throw error
+        return {error:error.message};
     }
 }
 

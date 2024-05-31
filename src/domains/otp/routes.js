@@ -1,42 +1,49 @@
 const express = require("express");
-const router =express.Router();
-const {sendOTP, verifyOTP} = require("./controller")
+const router = express.Router();
+const { sendOTP, verifyOTP } = require("./controller");
 
-
-
-router.post("/verify",async(req,res)=>{
+// Route to verify OTP
+router.post("/verify", async (req, res) => {
     try {
+        const { email, otp } = req.body;
 
-        let{email,otp}=req.body   
-        
-        const validOTP = await verifyOTP({ email,otp});
-        res.status(200).json({valid:validOTP});
+        if (!email || !otp) {
+            return res.status(400).json({ error: "Email and OTP are required." });
+        }
+
+        const result = await verifyOTP({ email, otp });
+
+        if (result.error) {
+            return res.status(400).json({ error: result.error });
+        }
+
+        res.status(200).json({ valid: result.valid });
     } catch (error) {
-        res.status(400).send(error.message)
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
     }
-})
+});
 
-//request new verification otp
-router.post("/",async(req,res)=>{
-
-
+// Route to request new verification OTP
+router.post("/", async (req, res) => {
     try {
+        const { email, subject, message, duration } = req.body;
 
-        const {email,subject,message,duration}=req.body;
+        if (!email || !subject || !message) {
+            return res.status(400).json({ error: "Email, subject, and message are required." });
+        }
 
-        const createdOTP = await sendOTP({
-            email,
-            subject,
-            message,
-            duration,
-        })
+        const result = await sendOTP({ email, subject, message, duration });
 
-        res.status(200).json(createdOTP);
-        
+        if (result.error) {
+            return res.status(400).json({ error: result.error });
+        }
+
+        res.status(200).json(result);
     } catch (error) {
-        res.status(400).send(error.message)
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
     }
-})
+});
 
-
-module.exports=router;
+module.exports = router;

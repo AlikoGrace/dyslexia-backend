@@ -23,7 +23,7 @@ const authenticateUser = async(data)=>{
         const passwordMatch = await verifyHashedData(password,hashedPassword)
 
         if (!passwordMatch){
-            throw Error('Invalid password entered!')
+            return {error:'Invalid password entered!'}
         }
 
         //create user token 
@@ -32,12 +32,13 @@ const authenticateUser = async(data)=>{
 
 
         //assign user token
-        fetchedUser.token= token
-        return fetchedUser;
+        // fetchedUser.token= token
+
+        return{token };
 
         
     } catch (error) {
-        throw error;
+        return {error:error.message};
     }
 }
 
@@ -50,7 +51,7 @@ const createNewUser= async(data)=>{
         const existingUser = await User.findOne({email});
 
         if (existingUser){
-            throw Error("User with the provided email aleady exist")
+            return {error:"User with the provided email aleady exist"};
         }
 
         //hash password
@@ -69,7 +70,7 @@ const createNewUser= async(data)=>{
         if (error.code === 11000 && error.keyValue.email) {
             return {error: "User with the provided email already exists"};
         } else {
-            throw error; // Re-throw other errors for generic handling
+            return{error:error.message}; 
         }
     }
 }

@@ -8,17 +8,17 @@ const verifyUserEmail= async({email,otp})=>{
 
         const validOTP = await verifyOTP({email,otp});
         if (!validOTP){
-            throw Error("Invalid code passed, check your inbox.");
+            return {error:"Invalid code passed, check your inbox."};
         }
 
         //update user record to show verified.
         await User.updateOne({email}, {verified: true});
 
         await deleteOTP(email);
-        return;
+        return{message:'Email verified successfully'}
         
     } catch (error) {
-         throw error;
+         return {error:error.message};
     }
 }
 
@@ -33,7 +33,7 @@ const sendVerificationOTPEmail = async (email)=>{
         const existingUser = await User.findOne({email});
     
         if(!existingUser){
-            throw Error("There's no account for the provided email.");
+            return {error:"There's no account for the provided email."};
         }
 
         const otpDetails ={
@@ -44,11 +44,11 @@ const sendVerificationOTPEmail = async (email)=>{
         };
 
         const createdOTP = await sendOTP(otpDetails);
-        return createdOTP;
+        return {message:'OTP sent successfully',otp:createdOTP};
         
     } catch (error) {
         console.error("Error searching for user:", error);
-        throw error;  // Re-throw the error for handling in routes.js
+        return{error:error.message}; 
       }
 }
 

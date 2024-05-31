@@ -1,49 +1,47 @@
+const Child = require('./model');
+const User = require('../user/model');
+const { hashData } = require('../../utils/hashData');
 
-const Child = require('./model')
+// Add a new child
+const addChild = async ({ name, age, grade, parent }) => {
+    try {
+        const newChild = new Child({
+            name,
+            age,
+            grade,
+            parent
+        });
 
-
-
-const addChild = async (name,age,grade,parentId) => { 
-  try {
-
-    const newChild = new Child({ name, age, grade, parent: parentId }); 
-
-    // Save the new child
-    const createdChild = await newChild.save();
-    console.log(createdChild)
-    return createdChild
-  } catch (error) {
-    throw error
-  }
-};
-
-const updateChild = async (childId, data) => {
-  try {
-    const updatedChild = await Child.findByIdAndUpdate(childId, data, { new: true }); 
-
-    if (!updatedChild) {
-      throw new Error('Child not found');
+        const createdChild = await newChild.save();
+        return createdChild;
+    } catch (error) {
+        throw new Error(error.message);
     }
-
-    return updatedChild;
-  } catch (error) {
-    throw error;
-  }
 };
 
-const deleteChild = async (childId) => {
-  try {
-    const deletedChild = await Child.findByIdAndDelete(childId);
+// Update an existing child
+const updateChild = async (id, { name, age, grade }) => {
+    try {
+        const updatedChild = await Child.findByIdAndUpdate(
+            id,
+            { name, age, grade },
+            { new: true }
+        );
 
-    if (!deletedChild) {
-      throw new Error('Child not found');
+        return updatedChild;
+    } catch (error) {
+        throw new Error(error.message);
     }
-
-    return deletedChild; // 
-  } catch (error) {
-    throw error;
-  }
 };
 
-// Export functions at the bottom
+// Delete an existing child
+const deleteChild = async (id) => {
+    try {
+        const deletedChild = await Child.findByIdAndDelete(id);
+        return deletedChild;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
 module.exports = { addChild, updateChild, deleteChild };

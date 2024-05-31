@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const {sendVerificationOTPEmail, verifyUserEmail}= require("./controller")
+const User= require("../../domains/user/model")
+const createToken = require("./../../utils/createToken")
+
 
 
 
@@ -10,13 +13,25 @@ router.post("/verify",async(req,res)=>{
     try {
         let{email,otp}=req.body
 
-        if (!(email , otp)) throw Error("Empty otp details are not allowed");
+        const fetchedUser = await User.findOne({email});
 
-        await verifyUserEmail({email, otp});
-        res.status(200).json({email, verified:true});
+          //create user token 
+          const tokenData = {userId:fetchedUser._id,email}
+          const token = await createToken(tokenData);
+
+        if (!(email && otp)) {
+            return res.status(400).json({ error: "Empty OTP details are not allowed" });
+        }
+       const result= await verifyUserEmail({email, otp,token});
+       if (result.error){
+        return res.status(400).json({ error: result.error });
+
+       }
+        res.status(200).json({email, verified:true,token});
         
     } catch (error) {
-        res.status(400).send(error.message);
+        console.error(error);
+        res.status(500).json({error:'internal server error'});
     }
 })
 
@@ -24,18 +39,16 @@ router.post("/verify",async(req,res)=>{
 router.post("/",async(req,res)=>{
     try {
 
-    const{email}=req.body;
-     if(!email)throw Error("An email is required");
+        const result = await sendVerificationOTPEmail(email);
+        if (result.error) {
+            return res.status(400).json({ error: result.error });
+        }
 
-
-     const createdEmailVerificationOTP= await sendVerificationOTPEmail(email);
-     res.status(200).json(createdEmailVerificationOTP);
-        
+        res.status(200).json(result);
     } catch (error) {
-        res.status(400).send(error.message);
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
     }
-
-
 });
 
 
