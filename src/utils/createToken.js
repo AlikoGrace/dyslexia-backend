@@ -8,7 +8,7 @@ const createToken = async(
 )=>{
      try {
         const token = await jwt.sign(tokenData,tokenKey,{
-            expiresIn,
+            expiresIn:"228h",
         });
         return token
         
