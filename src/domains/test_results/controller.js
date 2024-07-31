@@ -14,7 +14,7 @@ const sendEmailWithTestResults = async (email, predictions) => {
             <strong>Model ${index + 1} Prediction:</strong> ${prediction.prediction}
           </li>`).join('')}
       </ul>
-      <p>Best regards,<br>Your Test Team</p>
+      <p>Best regards,<br>LexAfriq</p>
     </div>
   `;
 
