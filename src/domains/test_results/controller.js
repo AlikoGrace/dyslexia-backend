@@ -4,10 +4,18 @@ const sendEmail = require("../../utils/sendEmail");
 
 const sendEmailWithTestResults = async (email, predictions) => {
   const emailBody = `
-    <p>Here are your dyslexia test results:</p>
-    <ul>
-      ${predictions.map((prediction, index) => `<li>Model ${index + 1} Prediction: ${prediction.prediction}</li>`).join('')}
-    </ul>
+    <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+      <h2 style="color: #333;">Dyslexia Test Results</h2>
+      <p>Dear User,</p>
+      <p>Here are your dyslexia test results:</p>
+      <ul style="background-color: #f9f9f9; padding: 10px; border-radius: 5px; list-style-type: none;">
+        ${predictions.map((prediction, index) => `
+          <li style="padding: 8px; border-bottom: 1px solid #ddd;">
+            <strong>Model ${index + 1} Prediction:</strong> ${prediction.prediction}
+          </li>`).join('')}
+      </ul>
+      <p>Best regards,<br>Your Test Team</p>
+    </div>
   `;
 
   const mailOptions = {
